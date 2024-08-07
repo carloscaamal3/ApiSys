@@ -42,6 +42,9 @@ require "modelos/sica/envioCorreo.php";
 require "modelos/sica/seguimiento.php";
 require "modelos/sica/prodLista.php";
 
+//CIUDADANO
+require "modelos/ciudadano/ciudadano.php";
+
 // Constantes de estado
 const ESTADO_URL_INCORRECTA = 2;
 const ESTADO_EXISTENCIA_RECURSO = 3;
@@ -89,7 +92,7 @@ $recurso = array_shift($peticion); //Toma el primer elemento del array para obte
 //$recursos_existentes = ['usuarios', 'tipo', 'tokens', 'password', 'clastipo', 'proveedor', 'cuentas', 'empleado', 'solpagos','consulta','folios','estatus','casosEsp','generales','rel_cuentas'];
 $recursos_existentes = ['usuarios', 'tipo', 'tokens', 'password', 'clastipo', 'proveedor', 
 'cuentas', 'empleado', 'solpagos','consulta','folios','casosEsp','generales','sistema',
-'vehiculo','producto','concomite','ordensica','factura','envioCorreo','seguimiento','productoLista'];
+'vehiculo','producto','concomite','ordensica','factura','envioCorreo','seguimiento','productoLista','ciudadano'];
 // Comprobar si existe el recurso
 if (!in_array($recurso, $recursos_existentes)) { //Si la API no cuenta con el recurso solicitado envia un mensaje
     throw new ExcepcionApi(ESTADO_EXISTENCIA_RECURSO, "No se reconoce el recurso al que intentas acceder", 404);
