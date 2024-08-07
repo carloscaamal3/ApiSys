@@ -1,0 +1,1332 @@
+{
+  "openapi" : "3.0.0",
+  "info" : {
+    "title" : "Agencia API REST",
+    "description" : "Permite gestionar la información de la agencia",
+    "termsOfService" : "https://rbsistemas.mx/terms",
+    "contact" : {
+      "name" : "José Antonio Rodríguez Barceló",
+      "url" : "https://rbsistemas.mx",
+      "email" : "rbsistemas@hotmail.com"
+    },
+    "license" : {
+      "name" : "Apache 2.0",
+      "url" : "https://www.apache.org/licenses/LICENSE-2.0.html"
+    },
+    "version" : "1.0.0"
+  },
+  "servers" : [ {
+    "description" : "Agencia Developer Server",
+    "url" : "https://api.shuttleexpressmexico.com.mx/v1/"
+  }, {
+    "description" : "SwaggerHub API Auto Mocking",
+    "url" : "https://virtserver.swaggerhub.com/RB-Sistemas/AgenciaAPI/1.0.0"
+  } ],
+  "paths" : {
+    "/hoteles" : {
+      "post" : {
+        "tags" : [ "hotel" ],
+        "summary" : "Agrega Hotel",
+        "description" : "Agrega un nuevo hotel al catálogo",
+        "security" : [ {
+          "api_key" : [ "write:hoteles", "read:hoteles" ]
+        } ],
+        "operationId" : "addHotel",
+        "responses" : {
+          "201" : {
+            "description" : "Created",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : {
+                    "hotel_id" : {
+                      "type" : "integer"
+                    },
+                    "estado" : {
+                      "type" : "integer"
+                    },
+                    "mensaje" : {
+                      "type" : "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "405" : {
+            "description" : "Entrada invalida"
+          }
+        },
+        "requestBody" : {
+          "$ref" : "#/components/requestBodies/Hotel"
+        }
+      },
+      "put" : {
+        "tags" : [ "hotel" ],
+        "summary" : "Actualiza Hotel",
+        "description" : "Actualiza un hotel en el catálogo",
+        "security" : [ {
+          "api_key" : [ "write:hoteles", "read:hoteles" ]
+        } ],
+        "operationId" : "editHotel",
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "string",
+                  "example" : {
+                    "estado" : 1,
+                    "mensaje" : "Registro actualizado con éxito"
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "string",
+                  "example" : {
+                    "estado" : 2,
+                    "mensaje" : "Solicitud no valida"
+                  }
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "string",
+                  "example" : {
+                    "estado" : 2,
+                    "mensaje" : "Recurso no autorizado"
+                  }
+                }
+              }
+            }
+          },
+          "405" : {
+            "description" : "Method not allowed",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "string",
+                  "example" : {
+                    "estado" : 2,
+                    "mensaje" : "Método no permitido"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody" : {
+          "$ref" : "#/components/requestBodies/Hotel"
+        }
+      },
+      "get" : {
+        "tags" : [ "hotel" ],
+        "summary" : "Obtiene Hoteles",
+        "operationId" : "getHotel",
+        "description" : "Listado de hoteles",
+        "security" : [ {
+          "api_key" : [ "write:hoteles", "read:hoteles" ]
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Listado de hoteles",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Hotel"
+                }
+              },
+              "application/xml" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Hotel"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "string",
+                  "example" : {
+                    "estado" : 2,
+                    "mensaje" : "Acceso denegado",
+                    "error" : "Token ausente o no válido"
+                  }
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Request not found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "string",
+                  "example" : {
+                    "estado" : 2,
+                    "mensaje" : "Acceso denegado",
+                    "error" : "No se encontro"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/hoteles/filtro" : {
+      "get" : {
+        "tags" : [ "hotel" ],
+        "summary" : "Obtiene Hoteles",
+        "description" : "Listado de hoteles por filtro",
+        "security" : [ {
+          "api_key" : [ "write:hoteles", "read:hoteles" ]
+        } ],
+        "parameters" : [ {
+          "name" : "campo",
+          "in" : "query",
+          "description" : "Campo que se va a considerar para el filtro",
+          "required" : true,
+          "explode" : true,
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string",
+              "enum" : [ "hotel_nombre", "hotel_activo", "zona_id" ],
+              "default" : "hotel_nombre"
+            }
+          }
+        }, {
+          "name" : "tipo",
+          "in" : "query",
+          "description" : "Tipo de filtrado que se va a considerar",
+          "required" : true,
+          "explode" : true,
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string",
+              "enum" : [ "igual", "diferente", "empieza", "contiene" ],
+              "default" : "igual"
+            }
+          }
+        }, {
+          "name" : "valor",
+          "in" : "query",
+          "description" : "El valor del filtro que se va a considerar.",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Listado de hoteles",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Hotel"
+                }
+              },
+              "application/xml" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Hotel"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "string",
+                  "example" : {
+                    "estado" : 2,
+                    "mensaje" : "Acceso denegado",
+                    "error" : "Token ausente o no válido"
+                  }
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Request not found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "string",
+                  "example" : {
+                    "estado" : 2,
+                    "mensaje" : "Acceso denegado",
+                    "error" : "No se encontro"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/hoteles/{hotel_id}" : {
+      "get" : {
+        "tags" : [ "hotel" ],
+        "summary" : "Obtiene Hotel",
+        "description" : "Hotel por Id",
+        "operationId" : "getHotelById",
+        "parameters" : [ {
+          "name" : "hotel_id",
+          "in" : "path",
+          "description" : "ID del hotel que desea obtener",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "security" : [ {
+          "api_key" : [ "write:hoteles", "read:hoteles" ]
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Hotel requerido",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Hotel"
+                }
+              },
+              "application/xml" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Hotel"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "hotel" ],
+        "summary" : "Elimina un hotel",
+        "description" : "Elimina un hotel por su Id",
+        "operationId" : "deleteHotelById",
+        "parameters" : [ {
+          "name" : "hotel_id",
+          "in" : "path",
+          "description" : "ID del hotel que desea obtener",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "security" : [ {
+          "api_key" : [ "write:hoteles", "read:hoteles" ]
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Ok",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "string",
+                  "example" : {
+                    "estado" : 1,
+                    "mensaje" : "Hotel inactivado con éxito"
+                  }
+                }
+              },
+              "application/xml" : {
+                "schema" : {
+                  "type" : "string",
+                  "example" : {
+                    "estado" : 1,
+                    "mensaje" : "Hotel inactivado con éxito"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/password/cambio" : {
+      "post" : {
+        "tags" : [ "password" ],
+        "description" : "Cambia la contraseña del usuario",
+        "summary" : "Cambia Contraseña",
+        "operationId" : "cambioPasswd",
+        "responses" : {
+          "200" : {
+            "description" : "Ok",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "string",
+                  "example" : {
+                    "estado" : 1,
+                    "mensaje" : "La contraseña se cambio con éxito"
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "string",
+                  "example" : {
+                    "estado" : 2,
+                    "mensaje" : "No se pudo cambiar la contraseña"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody" : {
+          "$ref" : "#/components/requestBodies/CambioPwd"
+        },
+        "security" : [ {
+          "api_key" : [ "write:usuarios", "read:usuarios" ]
+        } ]
+      }
+    },
+    "/password/correo" : {
+      "post" : {
+        "tags" : [ "password" ],
+        "summary" : "Envia correo reinicio",
+        "description" : "Envia un correo electronico al usuario solicitado para que pueda reinciar su contraseña",
+        "security" : [ {
+          "api_key" : [ "write:password", "read:password" ]
+        } ],
+        "operationId" : "sendMail",
+        "responses" : {
+          "200" : {
+            "description" : "Ok",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "string",
+                  "example" : {
+                    "estado" : 1,
+                    "mensaje" : "El correo se envio con exito"
+                  }
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "string",
+                  "example" : {
+                    "estado" : 2,
+                    "mensaje" : "Acceso denegado",
+                    "error" : "Token ausente o no válido"
+                  }
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Request not found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "string",
+                  "example" : {
+                    "estado" : 2,
+                    "mensaje" : "Acceso denegado",
+                    "error" : "No se encontro"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody" : {
+          "$ref" : "#/components/requestBodies/Invitacion"
+        }
+      }
+    },
+    "/password/reinicio" : {
+      "post" : {
+        "tags" : [ "password" ],
+        "summary" : "Reinicia contraseña",
+        "description" : "Reinicia la contraseña del usuario",
+        "security" : [ {
+          "api_key" : [ "write:password", "read:password" ]
+        } ],
+        "operationId" : "restartPwd",
+        "responses" : {
+          "200" : {
+            "description" : "Ok",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "string",
+                  "example" : {
+                    "estado" : 1,
+                    "mensaje" : "¡La contraseña se actualizo con éxito!"
+                  }
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "string",
+                  "example" : {
+                    "estado" : 2,
+                    "mensaje" : "Acceso denegado",
+                    "error" : "Token ausente o no válido"
+                  }
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Request not found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "string",
+                  "example" : {
+                    "estado" : 2,
+                    "mensaje" : "Acceso denegado",
+                    "error" : "No se encontro"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody" : {
+          "$ref" : "#/components/requestBodies/Login"
+        }
+      }
+    },
+    "/tokens/invalida" : {
+      "post" : {
+        "tags" : [ "token" ],
+        "summary" : "Invalida Json Web Token",
+        "description" : "Invalida el json web token producto del cierre de sesión",
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "string",
+                  "example" : {
+                    "estado" : 1,
+                    "mensaje" : "El token se invalido con éxito"
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "string",
+                  "example" : {
+                    "estado" : 2,
+                    "mensaje" : "No se pudo invalidar el token"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tokens/refresh" : {
+      "post" : {
+        "tags" : [ "token" ],
+        "summary" : "Json Web Token",
+        "description" : "Devuelve un nuevo json web token",
+        "parameters" : [ {
+          "name" : "Rft",
+          "in" : "header",
+          "description" : "refresh token",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "string",
+                  "example" : {
+                    "estado" : 1,
+                    "jwt" : "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "string",
+                  "example" : {
+                    "estado" : 2,
+                    "mensaje" : "URL mal formada"
+                  }
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "string",
+                  "example" : {
+                    "estado" : 2,
+                    "mensaje" : "Token ausente o no válido"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/usuarios/avatar" : {
+      "post" : {
+        "tags" : [ "usuario" ],
+        "summary" : "Actualiza Avatar",
+        "description" : "Carga la imagen del usuario y la actualiza en la bd",
+        "security" : [ {
+          "api_key" : [ "write:usuarios", "read:usuarios" ]
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Ok",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "string",
+                  "example" : {
+                    "estado" : 1,
+                    "mensaje" : "La imagen se actualizo con éxito",
+                    "url" : "https://url-to-image/image.jpeg"
+                  }
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "string",
+                  "example" : {
+                    "estado" : 2,
+                    "mensaje" : "Acceso denegado",
+                    "error" : "Token ausente o no válido"
+                  }
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Request not found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "string",
+                  "example" : {
+                    "estado" : 2,
+                    "mensaje" : "Acceso denegado",
+                    "error" : "No se encontro"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody" : {
+          "content" : {
+            "image/png" : {
+              "schema" : {
+                "type" : "string",
+                "format" : "binary"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/usuarios/invitacion" : {
+      "post" : {
+        "tags" : [ "usuario" ],
+        "summary" : "Invita usuario",
+        "description" : "Invita a un usuario a registrarse a traves de un correo electrónico",
+        "security" : [ {
+          "api_key" : [ "write:usuarios", "read:usuarios" ]
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Ok",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "string",
+                  "example" : {
+                    "estado" : 1,
+                    "mensaje" : "Se envió la invitacion a <correo electrónico>"
+                  }
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "string",
+                  "example" : {
+                    "estado" : 2,
+                    "mensaje" : "Acceso denegado",
+                    "error" : "Token ausente o no válido"
+                  }
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Request not found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "string",
+                  "example" : {
+                    "estado" : 2,
+                    "mensaje" : "Acceso denegado",
+                    "error" : "No se encontro"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody" : {
+          "$ref" : "#/components/requestBodies/Invitacion"
+        }
+      }
+    },
+    "/usuarios/login" : {
+      "post" : {
+        "tags" : [ "usuario" ],
+        "description" : "Inicio de sesión",
+        "summary" : "Login",
+        "operationId" : "login",
+        "responses" : {
+          "200" : {
+            "description" : "Ok",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : {
+                    "estado" : {
+                      "type" : "integer",
+                      "example" : 1
+                    },
+                    "usuario" : {
+                      "type" : "object",
+                      "properties" : {
+                        "usr_id" : {
+                          "type" : "integer",
+                          "example" : 3029
+                        },
+                        "usr_nombres" : {
+                          "type" : "string",
+                          "example" : "John"
+                        },
+                        "usr_apellidos" : {
+                          "type" : "string",
+                          "example" : "Doe"
+                        },
+                        "usr_avatar" : {
+                          "type" : "string",
+                          "example" : "https://url-to-image/image.jpeg"
+                        },
+                        "jwt" : {
+                          "type" : "string",
+                          "example" : "eyJ0eXAiOiJKV1QiLC...."
+                        },
+                        "rft" : {
+                          "type" : "string",
+                          "example" : "bnRvbmlvIi...."
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "string",
+                  "example" : {
+                    "estado" : 2,
+                    "mensaje" : "Error en la solicitud"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody" : {
+          "$ref" : "#/components/requestBodies/Login"
+        }
+      }
+    },
+    "/usuarios/registro" : {
+      "post" : {
+        "tags" : [ "usuario" ],
+        "description" : "Registrar usuario en la base de datos",
+        "summary" : "Registra Usuario",
+        "operationId" : "regUser",
+        "responses" : {
+          "201" : {
+            "description" : "Created",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "string",
+                  "example" : {
+                    "estado" : 1,
+                    "mensaje" : "Usuario registrado con éxito"
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "string",
+                  "example" : {
+                    "estado" : 2,
+                    "mensaje" : "Error en el cuerpo de la solicitud"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody" : {
+          "$ref" : "#/components/requestBodies/Usuario"
+        }
+      }
+    },
+    "/usuarios" : {
+      "get" : {
+        "tags" : [ "usuario" ],
+        "summary" : "Obtiene Usuarios",
+        "description" : "Listado de usuarios",
+        "security" : [ {
+          "api_key" : [ "write:usuarios", "read:usuarios" ]
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Ok",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Usuario"
+                }
+              },
+              "application/xml" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Usuario"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "string",
+                  "example" : {
+                    "estado" : 2,
+                    "mensaje" : "Acceso denegado",
+                    "error" : "Token ausente o no válido"
+                  }
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Request not found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "string",
+                  "example" : {
+                    "estado" : 2,
+                    "mensaje" : "Acceso denegado",
+                    "error" : "No se encontro"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/usuarios/{usr_id}" : {
+      "put" : {
+        "tags" : [ "usuario" ],
+        "summary" : "Actualizar usuario",
+        "description" : "Actualiza la información del usuario",
+        "parameters" : [ {
+          "name" : "usr_id",
+          "in" : "path",
+          "description" : "ID del usuario que desea actualizar",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "security" : [ {
+          "api_key" : [ "write:usuarios", "read:usuarios" ]
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "string",
+                  "example" : {
+                    "estado" : 1,
+                    "mensaje" : "Los información del usuario se actualizo con éxito"
+                  }
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "string",
+                  "example" : {
+                    "estado" : 2,
+                    "mensaje" : "Acceso denegado",
+                    "error" : "Token ausente o no válido"
+                  }
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Request not found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "string",
+                  "example" : {
+                    "estado" : 2,
+                    "mensaje" : "Acceso denegado",
+                    "error" : "No se encontro"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody" : {
+          "$ref" : "#/components/requestBodies/UpdateUsuario"
+        }
+      },
+      "get" : {
+        "tags" : [ "usuario" ],
+        "summary" : "Obtiene Usuario",
+        "description" : "Usuario por Id",
+        "operationId" : "getUsuarioById",
+        "parameters" : [ {
+          "name" : "usr_id",
+          "in" : "path",
+          "description" : "ID del usuario que desea obtener",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "security" : [ {
+          "api_key" : [ "write:usuarios", "read:usuarios" ]
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Ok",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Usuario"
+                }
+              },
+              "application/xml" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Usuario"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/usuarios/filtro" : {
+      "get" : {
+        "tags" : [ "usuario" ],
+        "summary" : "Obtiene Usuarios",
+        "description" : "Listado de usuarios por filtro",
+        "security" : [ {
+          "api_key" : [ "write:usuarios", "read:usuarios" ]
+        } ],
+        "parameters" : [ {
+          "name" : "campo",
+          "in" : "query",
+          "description" : "Campo que se va a considerar para el filtro",
+          "required" : true,
+          "explode" : true,
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string",
+              "enum" : [ "usr_nombres", "usr_apellidos", "usr_correo", "usr_activo" ],
+              "default" : "usr_activo"
+            }
+          }
+        }, {
+          "name" : "tipo",
+          "in" : "query",
+          "description" : "Tipo de filtrado que se va a considerar",
+          "required" : true,
+          "explode" : true,
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string",
+              "enum" : [ "igual", "diferente", "empieza", "contiene" ],
+              "default" : "igual"
+            }
+          }
+        }, {
+          "name" : "valor",
+          "in" : "query",
+          "description" : "El valor del filtro que se va a considerar.",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Ok",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Usuario"
+                }
+              },
+              "application/xml" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Usuario"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "string",
+                  "example" : {
+                    "estado" : 2,
+                    "mensaje" : "Acceso denegado",
+                    "error" : "Token ausente o no válido"
+                  }
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Request not found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "string",
+                  "example" : {
+                    "estado" : 2,
+                    "mensaje" : "Acceso denegado",
+                    "error" : "No se encontro"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components" : {
+    "securitySchemes" : {
+      "api_key" : {
+        "type" : "apiKey",
+        "name" : "jwt",
+        "in" : "header"
+      }
+    },
+    "schemas" : {
+      "Hotel" : {
+        "type" : "object",
+        "required" : [ "hotel_nombre", "hotel_direccion" ],
+        "properties" : {
+          "hotel_nombre" : {
+            "type" : "string"
+          },
+          "hotel_direccion" : {
+            "type" : "string"
+          },
+          "hotel_telefono" : {
+            "type" : "string"
+          },
+          "hotel_lat" : {
+            "type" : "number",
+            "format" : "float",
+            "example" : 0.0
+          },
+          "hotel_lng" : {
+            "type" : "number",
+            "format" : "float",
+            "example" : 0.0
+          },
+          "hotel_ubicacion" : {
+            "type" : "string"
+          }
+        }
+      },
+      "Usuario" : {
+        "type" : "object",
+        "required" : [ "usr_nombre", "usr_apellidos", "usr_correo", "usr_pwd" ],
+        "properties" : {
+          "usr_nombre" : {
+            "type" : "string"
+          },
+          "usr_apellidos" : {
+            "type" : "string"
+          },
+          "usr_correo" : {
+            "type" : "string"
+          },
+          "usr_pwd" : {
+            "type" : "string"
+          },
+          "usr_telefono" : {
+            "type" : "string"
+          }
+        }
+      },
+      "UpdateUsuario" : {
+        "type" : "object",
+        "required" : [ "usr_nombre", "usr_apellidos", "usr_telefono" ],
+        "properties" : {
+          "usr_nombre" : {
+            "type" : "string"
+          },
+          "usr_apellidos" : {
+            "type" : "string"
+          },
+          "usr_telefono" : {
+            "type" : "string"
+          }
+        }
+      },
+      "CambioPwd" : {
+        "type" : "object",
+        "required" : [ "contrasena_actual", "contrasena_nueva" ],
+        "properties" : {
+          "contrasena_actual" : {
+            "type" : "string"
+          },
+          "contrasena_nueva" : {
+            "type" : "string"
+          }
+        }
+      },
+      "Login" : {
+        "type" : "object",
+        "required" : [ "usr_correo", "usr_pwd" ],
+        "properties" : {
+          "usr_correo" : {
+            "type" : "string"
+          },
+          "usr_pwd" : {
+            "type" : "string"
+          }
+        }
+      },
+      "Invitacion" : {
+        "type" : "object",
+        "required" : [ "usr_correo" ],
+        "properties" : {
+          "usr_correo" : {
+            "type" : "string",
+            "example" : "rbsistemas@hotmail.com"
+          }
+        }
+      }
+    },
+    "requestBodies" : {
+      "Hotel" : {
+        "content" : {
+          "application/json" : {
+            "schema" : {
+              "$ref" : "#/components/schemas/Hotel"
+            }
+          },
+          "application/xml" : {
+            "schema" : {
+              "$ref" : "#/components/schemas/Hotel"
+            }
+          }
+        },
+        "description" : "Objeto Hotel necesario para agregarlo al catálogo",
+        "required" : true
+      },
+      "Usuario" : {
+        "content" : {
+          "application/json" : {
+            "schema" : {
+              "$ref" : "#/components/schemas/Usuario"
+            }
+          },
+          "application/xml" : {
+            "schema" : {
+              "$ref" : "#/components/schemas/Usuario"
+            }
+          }
+        },
+        "description" : "Objeto Usuario necesario para agregarlo a la base de datos",
+        "required" : true
+      },
+      "UpdateUsuario" : {
+        "content" : {
+          "application/json" : {
+            "schema" : {
+              "$ref" : "#/components/schemas/UpdateUsuario"
+            }
+          },
+          "application/xml" : {
+            "schema" : {
+              "$ref" : "#/components/schemas/UpdateUsuario"
+            }
+          }
+        },
+        "description" : "Objeto Usuario necesario para actualizar la información",
+        "required" : true
+      },
+      "CambioPwd" : {
+        "content" : {
+          "application/json" : {
+            "schema" : {
+              "$ref" : "#/components/schemas/CambioPwd"
+            }
+          },
+          "application/xml" : {
+            "schema" : {
+              "$ref" : "#/components/schemas/CambioPwd"
+            }
+          }
+        },
+        "description" : "Objeto contraseñas necesario para cambiar la contraseña",
+        "required" : true
+      },
+      "Login" : {
+        "content" : {
+          "application/json" : {
+            "schema" : {
+              "$ref" : "#/components/schemas/Login"
+            }
+          },
+          "application/xml" : {
+            "schema" : {
+              "$ref" : "#/components/schemas/Login"
+            }
+          }
+        },
+        "description" : "Objeto login necesario para iniciar sesión",
+        "required" : true
+      },
+      "Invitacion" : {
+        "content" : {
+          "application/json" : {
+            "schema" : {
+              "$ref" : "#/components/schemas/Invitacion"
+            }
+          },
+          "application/xml" : {
+            "schema" : {
+              "$ref" : "#/components/schemas/Invitacion"
+            }
+          }
+        },
+        "description" : "Objeto correo necesario para realizar la invitación",
+        "required" : true
+      }
+    }
+  }
+}
