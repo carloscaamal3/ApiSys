@@ -29,6 +29,7 @@ class Validador
      */
     public function validaToken()
     {
+        
         $cabeceras = apache_request_headers();
         // foreach ($cabeceras as $header => $value) {
         //     error_log("$header: $value <br />\n") ;
