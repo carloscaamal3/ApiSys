@@ -39,6 +39,18 @@ class ciudadano {
     const ESTADO_ERROR_PARAMETROS = 4;
     const ESTADO_NO_ENCONTRADO = 5;
 
+    SELECT = "select ifnull(idCiud, '') as idCiud,
+              ifnull(nombreCom, '') as nombreCom,
+              ifnull(claveINE, '') as claveIne,
+              ifnull(direccion, '') as direccion,
+              ifnull(colonia, '') as colonia,
+              ifnull(seccion, '') as seccion,
+              ifnull(municipio, '') as municipio,
+              ifnull(tipoCiud, '') as tipoCiud,
+              ifnull(activo, '') as activo,
+              ifnull(creado_por, '') as creado_por,
+              ifnull(creado_el, '') as creado_el from ";
+
     /**
     * Metodo POST Crea un tipo en la base de datos
     *
@@ -114,30 +126,31 @@ class ciudadano {
         throw new ExcepcionApi( self::ESTADO_ERROR_PARAMETROS, 'Falta información', 422 );
     }
     /**
-     * Método GET Obtiene uno o varios registros de la tabla de Sistema
-     *
-     * @param [array] $peticion Contiene un array con la(s) petición(es) del cliente
-     * @return object Devuelve un json con el resultado del método
-     */
-    public static function get($peticion)
-    {
+    * Método GET Obtiene uno o varios registros de la tabla de Sistema
+    *
+    * @param [ array ] $peticion Contiene un array con la( s ) petición( es ) del cliente
+    * @return object Devuelve un json con el resultado del método
+    */
+    public static function get( $peticion )
+ {
         $validaToken = Validador::obtenerInstancia()->validaToken();
 
-        if ($validaToken["exp"]) {
-            error_log("Quedan " . ($validaToken["exp"] - time()) / 60 . " minutos");
+        if ( $validaToken[ 'exp' ] ) {
+            error_log( 'Quedan ' . ( $validaToken[ 'exp' ] - time() ) / 60 . ' minutos' );
         }
-        switch ($peticion[0]) {
-             case 'getAll':
-                if (!empty($peticion[1])) {
-                    if (!is_numeric($peticion[1])) {
-                        return self::getAllFiltered($peticion[1]);
-                    }
+        switch ( $peticion[ 0 ] ) {
+            case 'getAll':
+            if ( !empty( $peticion[ 1 ] ) ) {
+                if ( !is_numeric( $peticion[ 1 ] ) ) {
+                    return self::getAllFiltered( $peticion[ 1 ] );
                 }
-                return self::getAll($peticion[1]);
-                break; 
+            }
+            return self::getAll( $peticion[ 1 ] );
+            break;
+
             default:
-                throw new ExcepcionApi(self::ESTADO_URL_INCORRECTA, "Url mal formada", 400);
-                break;
+            throw new ExcepcionApi( self::ESTADO_URL_INCORRECTA, 'Url mal formada', 400 );
+            break;
         }
     }
 
@@ -251,31 +264,57 @@ class ciudadano {
             'Error en existencia o sintaxis de parámetros'
         );
     }
-    private static function getAll($id = null)
-    {
+    private static function getAll( $id = null )
+ {
         try {
-            $whereId = !empty($id) ? " WHERE " . self::ID_CIUD . "= :idCiud" : "";
+            $whereId = !empty( $id ) ? ' WHERE ' . self::ID_CIUD . '= :idCiud' : '';
 
-            //$comando = "SELECT * FROM " . self::NOMBRE_TABLA . $whereId;
-            //$comando = self::SELECT_STRING. self::NOMBRE_TABLA . self::INNER_STRING . $whereId . " order by osNumDoc asc";
-            $comando = self::SELECT_STRING. self::NOMBRE_TABLA . $whereId . " order by idCiud asc";
-            $sentencia = ConexionBD::obtenerInstancia()->obtenerBD()->prepare($comando);
+            //$comando = 'SELECT * FROM ' . self::NOMBRE_TABLA . $whereId;
+            //$comando = self::SELECT_STRING. self::NOMBRE_TABLA . self::INNER_STRING . $whereId . ' order by osNumDoc asc';
+            $comando = self::SELECT. self::NOMBRE_TABLA . $whereId . ' order by idCiud desc';
+            $sentencia = ConexionBD::obtenerInstancia()->obtenerBD()->prepare( $comando );
 
-            if (!empty($id)) {
-                $sentencia->bindParam(":idCiud", $id, PDO::PARAM_INT);
+            if ( !empty( $id ) ) {
+                $sentencia->bindParam( ':idCiud', $id, PDO::PARAM_INT );
             }
 
+            $sentencia->execute();
+            http_response_code( 200 );
+            if ( $sentencia->rowCount() > 0 ) {
+                return $sentencia->fetchall( PDO::FETCH_ASSOC );
+            }
+            $mensaje = 'No se encontraron registros';
+            $mensaje .= !empty( $id ) ? ' con ese Id' : ' en la tabla: ' .  self::NOMBRE_TABLA;
+
+            return array(
+                'estado' => 1,
+                'mensaje' => $mensaje //'No se encontraron registros con ese id'
+            );
+        } catch ( PDOException $e ) {
+            throw new ExcepcionApi( self::ESTADO_ERROR_BD, $e->getMessage() );
+        }
+    }
+    private static function getAllFiltered($peticion)
+    {
+        if ($peticion != "filtro") {
+            throw new ExcepcionApi(self::ESTADO_ERROR_PARAMETROS, "No existe el servicio " . $peticion);
+        }
+
+        $filtro = UtilidadesApi::obtenerInstancia()->validaFiltros(self::CAMPOS);
+
+        $consulta = self::SELECT. self::NOMBRE_TABLA . $filtro['where'] . " order by idCiud desc";
+
+        try {
+            $sentencia = ConexionBD::obtenerInstancia()->obtenerBD()->prepare($consulta);
             $sentencia->execute();
             http_response_code(200);
             if ($sentencia->rowCount() > 0) {
                 return $sentencia->fetchall(PDO::FETCH_ASSOC);
             }
-            $mensaje = "No se encontraron registros";
-            $mensaje .= !empty($id) ? " con ese Id" : " en la tabla: " .  self::NOMBRE_TABLA;
-
             return array(
                 "estado" => 1,
-                "mensaje" => $mensaje //"No se encontraron registros con ese id"
+                "mensaje" => "No se encontraron registros"
+
             );
         } catch (PDOException $e) {
             throw new ExcepcionApi(self::ESTADO_ERROR_BD, $e->getMessage());
