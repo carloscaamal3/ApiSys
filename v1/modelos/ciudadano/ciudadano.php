@@ -39,7 +39,7 @@ class ciudadano {
     const ESTADO_ERROR_PARAMETROS = 4;
     const ESTADO_NO_ENCONTRADO = 5;
 
-    SELECT = "select ifnull(idCiud, '') as idCiud,
+    const SELECT = "select ifnull(idCiud, '') as idCiud,
               ifnull(nombreCom, '') as nombreCom,
               ifnull(claveINE, '') as claveIne,
               ifnull(direccion, '') as direccion,
