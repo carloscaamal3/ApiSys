@@ -49,16 +49,16 @@ class solicitud
     );
 
     const CAMPOS_DET = array (
-    sef::SFOLIODET,
-    sef::SPOSICION,
-    sef::IDSERVICIO,
-    sef::SEDESCRIPCION,
-    sef::SECANTIDAD,
-    sef::SEUNIDAD,
-    sef::SEMARCA,
-    sef::SETOTAL,
-    sef::SE_CREADO,
-    sef::SE_CREADOEL,
+    self::SFOLIODET,
+    self::SPOSICION,
+    self::IDSERVICIO,
+    self::SEDESCRIPCION,
+    self::SECANTIDAD,
+    self::SEUNIDAD,
+    self::SEMARCA,
+    self::SETOTAL,
+    self::SE_CREADO,
+    self::SE_CREADOEL,
     );
 
     //CODIGOS DE ERROR
@@ -82,6 +82,17 @@ class solicitud
     ifnull(fechaSolicitud, '') as fechaSolicitud,
     ifnull(fechaAprobacion, '') as fechaAprobacion,
     ifnull(creado_por, '') as creado_por from ";
+
+    const SElECT_DET = "select ifnull(s_folio, '') as s_folio,
+    ifnull(s_posicion, '') as s_posicion,
+    ifnull(id_servicio, '') as id_servicio,
+    ifnull(se_descripcion, '') as se_descripcion,
+    ifnull(se_cantidad, '') as se_cantidad,
+    ifnull(se_unidad, '') as se_unidad,
+    ifnull(se_marca, '') as se_marca,
+    ifnull(se_total, '') as se_total,
+    ifnull(creado_por, '') as creado_por,
+    ifnull(creado_el, '') as creado_el from ";
 
     public static function post( $peticion )
  {
@@ -293,16 +304,16 @@ class solicitud
                // Define los campos permitidos y sus valores predeterminados
                $camposPermitidos = [
    
-                sef::SFOLIODET => null,
-                sef::SPOSICION => null,
-                sef::IDSERVICIO => null,
-                sef::SEDESCRIPCION => null,
-                sef::SECANTIDAD => null,
-                sef::SEUNIDAD => null,
-                sef::SEMARCA => null,
-                sef::SETOTAL => null,
-                sef::SE_CREADO => $idUsuario,
-               ];
+                self::SFOLIODET => null,
+                self::SPOSICION => null,
+                self::IDSERVICIO => null,
+                self::SEDESCRIPCION => null,
+                self::SECANTIDAD => null,
+                self::SEUNIDAD => null,
+                self::SEMARCA => null,
+                self::SETOTAL => null,
+                self::SE_CREADO => $idUsuario,
+               ];l
    
                // Filtra solo los campos presentes en la solicitud y sus valores
                $datosInsert = array_intersect_key( ( array )$datos, $camposPermitidos );
