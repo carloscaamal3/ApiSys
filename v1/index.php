@@ -42,8 +42,9 @@ require "modelos/sica/envioCorreo.php";
 require "modelos/sica/seguimiento.php";
 require "modelos/sica/prodLista.php";
 
-//CIUDADANO
+
 require "modelos/ciudadano/ciudadano.php";
+require "modelos/solicitud/solicitud.php";
 
 // Constantes de estado
 const ESTADO_URL_INCORRECTA = 2;
