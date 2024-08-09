@@ -83,7 +83,7 @@ class solicitud
     ifnull(fechaAprobacion, '') as fechaAprobacion,
     ifnull(creado_por, '') as creado_por from ";
 
-    const SElECT_DET = "select ifnull(s_folio, '') as s_folio,
+    const SELECT_DET = "select ifnull(s_folio, '') as s_folio,
     ifnull(s_posicion, '') as s_posicion,
     ifnull(id_servicio, '') as id_servicio,
     ifnull(se_descripcion, '') as se_descripcion,
@@ -313,7 +313,7 @@ class solicitud
                 self::SEMARCA => null,
                 self::SETOTAL => null,
                 self::SE_CREADO => $idUsuario,
-               ];l
+               ];
    
                // Filtra solo los campos presentes en la solicitud y sus valores
                $datosInsert = array_intersect_key( ( array )$datos, $camposPermitidos );
